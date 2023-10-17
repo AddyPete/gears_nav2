@@ -9,7 +9,6 @@ from webots_ros2_driver.utils import controller_url_prefix
 from webots_ros2_driver.webots_controller import WebotsController
 from launch import LaunchDescription
 from launch.substitutions import Command, LaunchConfiguration
-import xacro
 
 
 def generate_launch_description():
