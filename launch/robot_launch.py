@@ -15,8 +15,10 @@ import xacro
 def generate_launch_description():
     package_name = "gears_nav2"
     package_dir = os.path.join(get_package_share_directory(package_name))
-
-    use_sim_time = LaunchConfiguration("use_sim_time", default=False)
+    robot_description = pathlib.Path(
+        os.path.join(package_dir, "resource", "gears_rover.urdf")
+    ).read_text()
+    use_sim_time = LaunchConfiguration("use_sim_time", default=True)
 
     webots = WebotsLauncher(
         world=os.path.join(package_dir, "worlds", "PIKABOT", "worlds", "pikabot.wbt")
@@ -29,7 +31,7 @@ def generate_launch_description():
         additional_env={"WEBOTS_CONTROLLER_URL": controller_url_prefix() + "pikabot"},
         parameters=[
             {
-                # "robot_description": robot_description,
+                "robot_description": robot_description,
                 "use_sim_time": use_sim_time,
                 "set_robot_state_publisher": False,
             },
