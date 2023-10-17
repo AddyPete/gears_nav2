@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<robot name="gears_rover">
+    <webots>
+        <device reference="LDS-01" type="Lidar">
+            <ros>
+                <enabled>true</enabled>
+                <updateRate>50</updateRate>
+                <topicName>/scan</topicName>
+                <alwaysOn>false</alwaysOn>
+                <frameName>LDS-01</frameName>
+            </ros>
+        </device>
+    </webots>
+</robot>
