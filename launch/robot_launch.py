@@ -21,14 +21,16 @@ def generate_launch_description():
     use_sim_time = LaunchConfiguration("use_sim_time", default=True)
 
     webots = WebotsLauncher(
-        world=os.path.join(package_dir, "worlds", "PIKABOT", "worlds", "pikabot.wbt")
+        world=os.path.join(
+            package_dir, "worlds", "GearsNav2World", "worlds", "GearsNav2World.wbt"
+        )
     )
 
     my_robot_driver = Node(
         package="webots_ros2_driver",
         executable="driver",
         output="screen",
-        additional_env={"WEBOTS_CONTROLLER_URL": controller_url_prefix() + "pikabot"},
+        additional_env={"WEBOTS_CONTROLLER_URL": controller_url_prefix() + "Gears3"},
         parameters=[
             {
                 "robot_description": robot_description,
