@@ -29,12 +29,24 @@ def generate_launch_description():
     my_robot_driver = WebotsController(
         robot_name="Gears3",
         parameters=[
-            {"robot_description": robot_description_path},
+            {
+                "robot_description": robot_description_path,
+                # "set_robot_state_publisher": True,
+            },
         ],
     )
+
+    base_link_to_laser = Node(
+        package="tf2_ros",
+        executable="static_transform_publisher",
+        arguments=["0", "0", "0.01", "0", "0", "0", "base_link", "LDS-01"],
+        parameters=[{"use_sim_time": use_sim_time}],
+    )
+
     return LaunchDescription(
         [
             webots,
+            base_link_to_laser,
             my_robot_driver,
             launch.actions.RegisterEventHandler(
                 event_handler=launch.event_handlers.OnProcessExit(
