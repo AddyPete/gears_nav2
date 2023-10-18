@@ -31,7 +31,7 @@ class GearsRobotDriver:
             wheel_motors, steering_motors, ROBOT_WIDTH, ROBOT_HEIGHT
         )
 
-        # self.__target_twist = Twist()
+        self.__target_twist = Twist()
 
         rclpy.init(args=None)
         self.__node = rclpy.create_node("my_robot_driver")
