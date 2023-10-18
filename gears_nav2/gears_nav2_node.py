@@ -1,24 +1,37 @@
 import rclpy
 from geometry_msgs.msg import Twist
+from controllers.gears_controller import GearsController
 
-HALF_DISTANCE_BETWEEN_WHEELS = 0.045
-WHEEL_RADIUS = 0.025
+STEER_MOTORS = 4
+DRIVE_MOTORS = 4
+ROBOT_WIDTH = 0.815971
+ROBOT_HEIGHT = 0.7205
 
 
 class GearsRobotDriver:
     def init(self, webots_node, properties):
         self.__robot = webots_node.robot
 
-        self.__left_motor = self.__robot.getDevice("FL_Wheel")
-        self.__right_motor = self.__robot.getDevice("FR_Wheel")
+        wheel_motors = []
+        steering_motors = []
 
-        self.__left_motor.setPosition(float("inf"))
-        self.__left_motor.setVelocity(0)
+        wheel_motor_names = ["FR_Wheel", "FL_Wheel", "BR_Wheel", "BL_Wheel"]
+        steering_motor_names = ["FR_Control", "FL_Control", "BR_Control", "BL_Control"]
 
-        self.__right_motor.setPosition(float("inf"))
-        self.__right_motor.setVelocity(0)
+        for i in range(DRIVE_MOTORS):
+            wheel_motors.append(self.__robot.getDevice(wheel_motor_names[i]))
+            wheel_motors[i].setPosition(float("inf"))
+            wheel_motors[i].setVelocity(0.0)
 
-        self.__target_twist = Twist()
+        for i in range(STEER_MOTORS):
+            steering_motors.append(self.__robot.getDevice(steering_motor_names[i]))
+            steering_motors[i].setPosition(0)
+
+        self.__controller = GearsController(
+            wheel_motors, steering_motors, ROBOT_WIDTH, ROBOT_HEIGHT
+        )
+
+        # self.__target_twist = Twist()
 
         rclpy.init(args=None)
         self.__node = rclpy.create_node("my_robot_driver")
@@ -30,16 +43,7 @@ class GearsRobotDriver:
 
     def step(self):
         rclpy.spin_once(self.__node, timeout_sec=0)
+        self.__controller.go_straight(5.0)
 
-        forward_speed = self.__target_twist.linear.x
-        angular_speed = self.__target_twist.angular.z
-
-        command_motor_left = (
-            forward_speed - angular_speed * HALF_DISTANCE_BETWEEN_WHEELS
-        ) / WHEEL_RADIUS
-        command_motor_right = (
-            forward_speed + angular_speed * HALF_DISTANCE_BETWEEN_WHEELS
-        ) / WHEEL_RADIUS
-
-        self.__left_motor.setVelocity(command_motor_left)
-        self.__right_motor.setVelocity(command_motor_right)
+    #     self.__left_wheel_motor.setVelocity(self.__target_twist.linear.x)
+    #     self.__right_wheel_motor.setVelocity(self.__target_twist.linear.x)
