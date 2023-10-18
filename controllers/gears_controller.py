@@ -82,12 +82,16 @@ class GearsController:
         velocities = [0, 0, 0, 0]
         self.set_wheel_speed(velocities)
 
-    def reset_wheels(self):
+    def reset_wheels(self, mode="All"):
         self.ackerman_rot_h = 0
         self.ackerman_rot_l = 0
         self.deg = 0
-        self.velocities = [0, 0, 0, 0]
-        steers = [0, 0, 0, 0]
+        if mode == "All":
+            self.velocities = [0, 0, 0, 0]
+            steers = [0, 0, 0, 0]
+        elif mode == "Steer":
+            steers = [0, 0, 0, 0]
+
         self.__set_steer(steers)
         # self.set_wheel_speed(self.velocities)
 
@@ -142,13 +146,13 @@ class GearsController:
         if self.ackerman_rot_h == 0:
             return
 
-        print("HIGH AFT {0}".format(math.degrees(self.ackerman_rot_h)))
-        print("LOW AFT {0}".format(math.degrees(self.ackerman_rot_l)))
+        # print("HIGH AFT {0}".format(math.degrees(self.ackerman_rot_h)))
+        # print("LOW AFT {0}".format(math.degrees(self.ackerman_rot_l)))
 
-        print(
-            "CHECK DENOM: "
-            + str((2 * self.width + self.height / math.tan(abs((self.ackerman_rot_h)))))
-        )
+        # print(
+        #     "CHECK DENOM: "
+        #     + str((2 * self.width + self.height / math.tan(abs((self.ackerman_rot_h)))))
+        # )
 
         if self.mode == "ackerman":
             phi = math.atan(
@@ -163,7 +167,7 @@ class GearsController:
             )
             # print ("STOP")
 
-        print("A: {0} B: {1}".format(self.width, self.height))
+        # print("A: {0} B: {1}".format(self.width, self.height))
 
         if self.ackerman_rot_h > 0:
             self.ackerman_rot_l = phi

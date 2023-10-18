@@ -46,10 +46,21 @@ class GearsRobotDriver:
 
         self.__controller.go_straight(self.__target_twist.linear.x)
 
+        self.__node.get_logger().info(
+            f" Linear {self.__target_twist.linear.x} Angular {self.__target_twist.angular.z}"
+        )
+
         if self.__target_twist.angular.z > 0.0:
+            self.__node.get_logger().info("Going Left")
+            self.__controller.go_straight(abs(self.__target_twist.angular.z))
             self.__controller.set_ackerman_steer(0.785398, "mirror")
         elif self.__target_twist.angular.z < 0.0:
+            self.__node.get_logger().info("Going Right")
+            self.__controller.go_straight(abs(self.__target_twist.angular.z))
             self.__controller.set_ackerman_steer(-0.785398, "mirror")
+        else:
+            self.__node.get_logger().info("Center")
+            self.__controller.reset_wheels("Steer")
 
     #     self.__left_wheel_motor.setVelocity(self.__target_twist.linear.x)
     #     self.__right_wheel_motor.setVelocity(self.__target_twist.linear.x)
