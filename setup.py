@@ -26,7 +26,9 @@ data_files.append(
         ["worlds/GearsNav2World/protos/GearsRover.proto"],
     )
 )
-
+data_files.append(
+    ("share/" + package_name + "/controllers", ["controllers/gears_controller.py"])
+)
 setup(
     name=package_name,
     version="0.0.0",
