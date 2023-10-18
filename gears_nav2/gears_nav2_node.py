@@ -43,7 +43,13 @@ class GearsRobotDriver:
 
     def step(self):
         rclpy.spin_once(self.__node, timeout_sec=0)
-        self.__controller.go_straight(5.0)
+
+        self.__controller.go_straight(self.__target_twist.linear.x)
+
+        if self.__target_twist.angular.z > 0.0:
+            self.__controller.set_ackerman_steer(0.785398, "mirror")
+        elif self.__target_twist.angular.z < 0.0:
+            self.__controller.set_ackerman_steer(-0.785398, "mirror")
 
     #     self.__left_wheel_motor.setVelocity(self.__target_twist.linear.x)
     #     self.__right_wheel_motor.setVelocity(self.__target_twist.linear.x)

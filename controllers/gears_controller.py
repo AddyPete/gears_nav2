@@ -26,9 +26,6 @@ class GearsController:
             self.wheel_motors.append(wheel_motors[i])
             self.steering_motors.append(steering_motors[i])
 
-        # self.a = a
-        # self.b = b
-
     def go_straight(self, velocity):
         # print ("STRAIGHT HIGH {0}".format(math.degrees(self.ackerman_rot_h)))
         # print ("LSTRAIGHT LOW  {0}".format(math.degrees(self.ackerman_rot_l)))
@@ -148,7 +145,10 @@ class GearsController:
         print("HIGH AFT {0}".format(math.degrees(self.ackerman_rot_h)))
         print("LOW AFT {0}".format(math.degrees(self.ackerman_rot_l)))
 
-        print("CHECK DENOM: " + str((2 * a + b / math.tan(abs((self.ackerman_rot_h))))))
+        print(
+            "CHECK DENOM: "
+            + str((2 * self.width + self.height / math.tan(abs((self.ackerman_rot_h)))))
+        )
 
         if self.mode == "ackerman":
             phi = math.atan(
@@ -158,7 +158,7 @@ class GearsController:
         # print ("PHI {0}".format(phi))
         else:
             phi = math.atan(
-                self.b
+                self.height
                 / (2 * self.width + self.height / math.tan(abs((self.ackerman_rot_h))))
             )
             # print ("STOP")
