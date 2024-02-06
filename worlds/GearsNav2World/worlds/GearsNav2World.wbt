@@ -4,7 +4,9 @@ EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/project
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/appearances/protos/SandyGround.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/trees/protos/Sassafras.proto"
-EXTERNPROTO "../protos/GearsRover.proto"
+EXTERNPROTO "/home/minegearscsu/ros2_ws/install/gears_nav2/share/gears_nav2/worlds/GearsNav2World/protos/GearsRover.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/factory/containers/protos/WoodenBox.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/apartment_structure/protos/Wall.proto"
 
 WorldInfo {
   info [
@@ -12,19 +14,12 @@ WorldInfo {
     "Clearpath moose."
   ]
   title "Uneven Terrain"
-  CFM 0.0003
-  ERP 0.4
-  basicTimeStep 4
   defaultDamping Damping {
   }
   lineScale 0.2
   contactProperties [
     ContactProperties {
       material1 "wheel"
-      material2 "moose wheel"
-      coulombFriction [
-        4
-      ]
       softCFM 1e-05
       bumpSound ""
       rollSound ""
@@ -33,9 +28,10 @@ WorldInfo {
   ]
 }
 Viewpoint {
-  orientation 0.2691760051152741 -0.12573587579582862 -0.9548480338818516 3.980665393119231
-  position 7.528492294472562 -4.3496847804372 3.5374814625411486
+  orientation -0.4727698889466596 0.5052380310851322 0.7219578686118615 1.8273098741829392
+  position -19.031192976812644 -86.20945665419663 199.2765832150609
   near 1
+  follow "Gears3"
 }
 TexturedBackground {
 }
@@ -45,10 +41,6 @@ TexturedBackgroundLight {
 Sassafras {
   translation 0 -16.26 0
   name "sassafras tree(3)"
-}
-Sassafras {
-  translation 0 -8.5 0
-  name "sassafras tree(4)"
 }
 DEF PLANE Solid {
   children [
@@ -68,17 +60,22 @@ DEF PLANE Solid {
   boundingObject USE PLANE_SHAPE
 }
 Sassafras {
+  translation -6.3 0 0
 }
 Sassafras {
-  translation 0 9.52 0
+  translation 7.76 5.12 0
   name "sassafras tree(2)"
 }
 Sassafras {
   translation 0 17.7 0
   name "sassafras tree(1)"
 }
-GearsRover {
-  translation 3.69 0 0.29
+Sassafras {
+  translation 6.72 28.27 0
+  name "sassafras tree(4)"
+}
+DEF Gears3 GearsRover {
+  translation 0 0 0.29
   controller "<extern>"
   extensionSlot [
     Lidar {
@@ -713,8 +710,154 @@ GearsRover {
       numberOfLayers 1
       near 0.07
       minRange 0.63
-      maxRange 12
+      maxRange 20
       noise 0.0043
     }
+    InertialUnit {
+    }
   ]
+}
+WoodenBox {
+  translation 11.17 3.13 0.5
+  size 0.7 3 1
+}
+WoodenBox {
+  translation 11.17 -0.36 0.5
+  rotation 0 0 1 -1.047195307179586
+  name "wooden box(11)"
+  size 0.7 3 1
+}
+WoodenBox {
+  translation 23.35 0 0.5
+  name "wooden box(7)"
+  size 0.6 1.6 1
+}
+WoodenBox {
+  translation 14.88 9.66 0.5
+  name "wooden box(3)"
+  size 0.6 3.7 1
+}
+WoodenBox {
+  translation 10.58 -22.72 0.5
+  name "wooden box(5)"
+  size 0.6 3.7 1
+}
+WoodenBox {
+  translation -13.08 -5.98 0.5
+  name "wooden box(9)"
+  size 0.6 3.7 1
+}
+WoodenBox {
+  translation -9.39 5.11 0.5
+  name "wooden box(10)"
+  size 0.6 3.7 1
+}
+WoodenBox {
+  translation 7.3 -8.39 0.5
+  name "wooden box(1)"
+  size 0.6 1.6 1
+}
+WoodenBox {
+  translation 0.36 -8.39 0.5
+  rotation 0 0 1 -0.785395307179586
+  name "wooden box(2)"
+  size 3.6 1.6 1
+}
+WoodenBox {
+  translation 0.93 11.73 0.5
+  name "wooden box(6)"
+  size 3.6 1.6 1
+}
+WoodenBox {
+  translation -6.22 23.62 0.5
+  name "wooden box(12)"
+  size 3.6 1.6 1
+}
+WoodenBox {
+  translation 22.38 23.62 0.5
+  name "wooden box(15)"
+  size 3.6 1.6 1
+}
+WoodenBox {
+  translation 18.87 23.62 0.5
+  name "wooden box(16)"
+  size 3.6 1.6 1
+}
+WoodenBox {
+  translation 15.24 30 0.5
+  name "wooden box(17)"
+  size 3.6 1.6 1
+}
+WoodenBox {
+  translation -10.18 14.12 0.5
+  rotation 0 0 1 -2.6179953071795863
+  name "wooden box(13)"
+  size 3.6 1.6 1
+}
+WoodenBox {
+  translation -10.18 32.3 0.5
+  rotation 0 0 1 0.785398
+  name "wooden box(22)"
+  size 3.6 1.6 1
+}
+WoodenBox {
+  translation -14.12 23.62 0.5
+  name "wooden box(14)"
+  size 3.6 1.6 1
+}
+WoodenBox {
+  translation 15.42 -8.39 0.5
+  rotation 0 0 1 -1.047195307179586
+  name "wooden box(4)"
+  size 3.6 1.6 1
+}
+WoodenBox {
+  translation 15.42 -30.17 0.5
+  rotation 0 0 1 0.785398
+  name "wooden box(18)"
+  size 3.6 1.6 1
+}
+WoodenBox {
+  translation 19.3018 -26.2882 0.5
+  rotation 0 0 1 0.785398
+  name "wooden box(19)"
+  size 3.6 1.6 1
+}
+WoodenBox {
+  translation -7.23 -15.49 0.5
+  name "wooden box(8)"
+  size 3.6 1.6 1
+}
+WoodenBox {
+  translation -7.23 -25.25 0.5
+  rotation 0 0 1 -1.047195307179586
+  name "wooden box(20)"
+  size 3.6 1.6 1
+}
+WoodenBox {
+  translation -16.5599 -23.0501 0.5
+  rotation 0 0 1 -1.047195307179586
+  name "wooden box(21)"
+  size 3.6 1.6 1
+}
+Wall {
+  translation 25.95 0.03 0
+  size 1 70 2.4
+}
+Wall {
+  translation -20.79 0.03 0
+  name "wall(1)"
+  size 1 70 2.4
+}
+Wall {
+  translation -0.73 -35.88 0
+  rotation 0 0 1 -1.5707953071795862
+  name "wall(2)"
+  size 1 70 2.4
+}
+Wall {
+  translation -0.730077 36.15 0
+  rotation 0 0 1 -1.5707953071795862
+  name "wall(3)"
+  size 1 70 2.4
 }
