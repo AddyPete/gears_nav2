@@ -11,7 +11,7 @@
                 <frameName>LDS-01</frameName>
             </ros>
         </device>
-        <plugin type="gears_nav2.gears_nav2_node.GearsRobotDriver" />
+        <plugin type="gears_nav2.gears_3d_nav_node.GearsRobotDriver" />
         <!-- <plugin type="gears_nav2.gears_nav2_node.GearsRobotDriver" /> -->
     </webots>
 </robot>
