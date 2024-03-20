@@ -49,6 +49,9 @@ setup(
     license="TODO: License declaration",
     tests_require=["pytest"],
     entry_points={
-        "console_scripts": ["gears_nav2_node = gears_nav2.gears_nav2_node:main"],
+        "console_scripts": [
+            "gears_nav2_node = gears_nav2.gears_nav2_node:main",
+            "gears_3d_nav_node = gears_nav2.gears_3d_nav_node:main",
+        ],
     },
 )
