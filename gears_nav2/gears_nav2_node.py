@@ -63,6 +63,7 @@ class GearsRobotDriver:
         self.odom_publisher = self.__node.create_publisher(Odometry, "odom", 10)
 
         self.__mode = "mirrored"
+        self.__spin_mode_active = False
 
     def __cmd_vel_callback(self, twist):
         self.__target_twist = twist
@@ -93,26 +94,46 @@ class GearsRobotDriver:
             self.__node.get_logger().info(f"Command Received")
 
             if linear_speed == 0.0:
-                linear_speed = abs(
+                self.__mode = "spin"
+            else:
+                self.__mode = "mirror"
+
+            if self.__mode == "spin":
+
+                # self.__mode = "spin"
+
+                if not self.__spin_mode_active:
+                    self.__controller.set_spin_mode()
+                    # time.sleep(1)
+                    self.__spin_mode_active = True
+
+                final_angular_speed = abs(
                     np.interp(
                         angular_speed,
                         (
-                            math.radians(-MAX_ANGULAR_OUTPUT),
-                            math.radians(MAX_ANGULAR_OUTPUT),
+                            math.radians(-MAX_ANGULAR),
+                            math.radians(MAX_ANGULAR),
                         ),
                         (-MAX_LINEAR_OUTPUT, MAX_LINEAR_OUTPUT),
                     )
                 )
+                if angular_speed > 0:
+                    self.__controller.go_spin(final_angular_speed, "counter_clockwise")
+                else:
+                    self.__controller.go_spin(final_angular_speed, "clockwise")
 
+            else:
+                # self.__mode = "mirror"
                 # linear_speed = abs(angular_speed)
-
-            self.__controller.go_straight(linear_speed)
-            self.__controller.set_ackerman_steer(angular_speed)
+                self.__controller.go_straight(linear_speed)
+                self.__controller.set_ackerman_steer(angular_speed)
+                self.__spin_mode_active = False
 
         else:
             self.__node.get_logger().info(f"No Command Received")
             self.__controller.reset_wheels()
             self.__controller.stop()
+            self.__spin_mode_active = False
 
         if linear_speed != 0.0 and angular_speed == 0.0:
             self.__node.get_logger().info(f"Reset Wheels")
