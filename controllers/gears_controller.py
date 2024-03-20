@@ -101,6 +101,28 @@ class RobotController:
         # self.all_steers = steers
         self.__set_steer(steers)
 
+    def set_spin_mode(self):
+
+        steering_motors_theta = [
+            self.angle_rad,
+            -self.angle_rad,
+            -self.angle_rad,
+            self.angle_rad,
+        ]
+        self.__set_steer(steering_motors_theta)
+
+    def go_spin(self, velocity, direction):
+
+        if direction == "counter_clockwise":
+
+            velocities_counter_cw = [velocity, -velocity, velocity, -velocity]
+            self.set_wheel_speed(velocities_counter_cw)
+
+        elif direction == "clockwise":
+
+            velocities_cw = [-velocity, velocity, -velocity, velocity]
+            self.set_wheel_speed(velocities_cw)
+
     def set_wheel_speed(self, velocities):
         for i in range(4):
             self.wheel_motors[i].setVelocity(velocities[i])
