@@ -16,6 +16,13 @@ data_files.append(
 )
 
 data_files.append(
+    (
+        "share/" + package_name + "/worlds/GearsNav2World/worlds",
+        ["worlds/GearsNav2World/worlds/3d_world.wbt"],
+    )
+)
+
+data_files.append(
     ("share/" + package_name + "/resource", ["resource/gears_rover.urdf"])
 )
 data_files.append(("share/" + package_name + "/launch", ["launch/robot_launch.py"]))
