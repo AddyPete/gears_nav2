@@ -2,3 +2,4 @@ setup.cfg
 *.pyc
 test
 gears_nav2/__pycache__/gears_nav2_node.cpython-310.pyc
+worlds/GearsNav2World/worlds/.3d_world.jpg
