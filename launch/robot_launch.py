@@ -49,12 +49,18 @@ def generate_launch_description():
         parameters=[{"use_sim_time": use_sim_time}],
     )
 
+    laser_wall_detection = Node(
+        package=package_name,
+        executable="laser_wall_detection_node",
+    )
+
     return LaunchDescription(
         [
             webots,
             base_link_to_laser,
             my_robot_driver,
             base_link_to_base_footprint,
+            laser_wall_detection,
             launch.actions.RegisterEventHandler(
                 event_handler=launch.event_handlers.OnProcessExit(
                     target_action=webots,
