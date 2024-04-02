@@ -16,8 +16,8 @@ WorldInfo {
   ]
 }
 Viewpoint {
-  orientation -0.08101845448871262 0.9962784559487661 0.029415102321813075 0.07243012827981261
-  position -5.062157869590846 -0.03509666500852031 0.867293343397722
+  orientation -0.18371740943635034 -0.06307976714276889 0.9809530347815895 3.7600144552114614
+  position 11.107961277761635 1.1782430220944873 2.3856704556055632
   follow "Gears3"
 }
 TexturedBackground {
@@ -63,7 +63,8 @@ Solid {
   locked TRUE
 }
 DEF Gears3 GearsRover {
-  translation 0 0 0.29
+  translation 8.93997 0 1.59692
+  rotation 0 1 0 -0.174533
   controller "<extern>"
   extensionSlot [
     Lidar {
@@ -735,8 +736,8 @@ DEF Gears3 GearsRover {
           translation 0.027 0.011 0.034
           name "Astra rgb"
           fieldOfView 1.04
-          width 640
-          height 480
+          width 320
+          height 240
           recognition Recognition {
           }
         }
@@ -744,8 +745,8 @@ DEF Gears3 GearsRover {
           translation 0.027 0.037 0.034
           name "Astra depth"
           fieldOfView 1.04
-          width 640
-          height 480
+          width 320
+          height 240
           minRange 0.6
           maxRange 8
         }
@@ -1167,7 +1168,7 @@ SolidBox {
   size 0.2 0.2 0.2
 }
 DEF PERSON Solid {
-  translation 9.08 -0.83 1.93
+  translation 9.08 -1.68 1.93
   children [
     DEF PERSON Transform {
       rotation 0 0 1 3.14159
@@ -1264,7 +1265,7 @@ DEF PERSON Solid {
   ]
 }
 DEF PERSON Solid {
-  translation 3.55 -0.83 0.98
+  translation 3.55 -1.99 0.98
   children [
     DEF PERSON Transform {
       rotation 0 0 1 3.14159
@@ -1361,7 +1362,7 @@ DEF PERSON Solid {
   ]
 }
 DEF PERSON Solid {
-  translation 13.56 2.01 1.93
+  translation 14.57 2.01 1.93
   rotation 0 0 1 -1.5707953071795862
   children [
     DEF PERSON Transform {
@@ -1459,7 +1460,7 @@ DEF PERSON Solid {
   ]
 }
 DEF PERSON Solid {
-  translation 6.36 0.73 1.38
+  translation 6.36 1.55 1.38
   children [
     DEF PERSON Transform {
       rotation 0 0 1 3.14159
@@ -1556,7 +1557,7 @@ DEF PERSON Solid {
   ]
 }
 DEF PERSON Solid {
-  translation 5.5 3.67 3.17
+  translation 5.5 4.65 3.17
   rotation 0 0 1 -3.1415853071795863
   children [
     DEF PERSON Transform {
@@ -1654,7 +1655,7 @@ DEF PERSON Solid {
   ]
 }
 DEF PERSON Solid {
-  translation 0.75997 5.35 3.93
+  translation 1.70997 5.35 3.93
   rotation 0 0 1 1.5708
   children [
     DEF PERSON Transform {
@@ -1948,7 +1949,7 @@ DEF PERSON Solid {
   ]
 }
 DEF PERSON Solid {
-  translation 0.829908 25.86 3.93
+  translation 1.89991 25.86 3.93
   rotation 0 0 1 1.5708
   children [
     DEF PERSON Transform {
@@ -2046,7 +2047,7 @@ DEF PERSON Solid {
   ]
 }
 DEF PERSON Solid {
-  translation 0.829918 21.5 3.93
+  translation 1.58992 21.5 3.93
   rotation 0 0 1 1.5708
   children [
     DEF PERSON Transform {
@@ -2144,7 +2145,7 @@ DEF PERSON Solid {
   ]
 }
 DEF PERSON Solid {
-  translation 9.42 3.67 2.5
+  translation 9.42 4.79 2.5
   rotation 0 0 1 -3.1415853071795863
   children [
     DEF PERSON Transform {
