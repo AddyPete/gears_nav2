@@ -97,6 +97,10 @@ class GearsRobotDriver:
         # return response
         else:
             self.__node.get_logger().info("Resetting simulation...")
+            self.__controller.reset_wheels()
+            self.__target_twist.linear.x = 0.0
+            self.__target_twist.angular.z = 0.0
+            self.__controller.stop()
             self.__robot.simulationResetPhysics()
             # self.__robot.simulationReset()
             reset_translation = [8.939, -0.001, 1.575]  # New position [x, y, z]
