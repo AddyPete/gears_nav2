@@ -5,7 +5,8 @@ from nav_msgs.msg import Odometry
 from geometry_msgs.msg import TransformStamped
 from tf2_ros import TransformBroadcaster
 import numpy as np
-import math
+from std_msgs.msg import Bool, String
+from std_srvs.srv import Trigger
 
 STEER_MOTORS = 4
 DRIVE_MOTORS = 4
@@ -30,6 +31,7 @@ class GearsRobotDriver:
 
         self.__supervisor = webots_node.robot.getSelf()
         self.trans_field = self.__supervisor.getField("translation")
+        self.rot_field = self.__supervisor.getField("rotation")
 
         self.__inertial_unit = self.__robot.getDevice("inertial unit")
         self.__inertial_unit.enable(self._timestep)
@@ -60,6 +62,8 @@ class GearsRobotDriver:
         )
 
         self.__target_twist = Twist()
+        self.__is_obj_detected = Bool()
+        self.__mode_msg = String()
         # self.__mode = "mirror"
         # self.arduino = serial.Serial(port="/dev/ttyUSB0", baudrate=115200, timeout=1)
 
@@ -68,12 +72,50 @@ class GearsRobotDriver:
         self.__node.get_logger().info("Started Custom Driver Plugin")
 
         self.__node.create_subscription(Twist, "cmd_vel", self.__cmd_vel_callback, 1)
+        self.__node.create_subscription(String, "mode", self.__mode_callback, 1)
 
         self.broadcaster = TransformBroadcaster(self.__node)
         self.odom_publisher = self.__node.create_publisher(Odometry, "odom", 10)
+        self.obj_det_publisher_ = self.__node.create_publisher(
+            Bool, "/is_object_detected", 10
+        )
+        # self.mode_publisher = self.__node.create_publisher(String, "/mode", 10)
+
+        self.reset_service = self.__node.create_service(
+            Trigger, "reset_simulation", self.reset_simulation_callback
+        )
 
         self.__mode = "mirrored"
-        self.__spin_mode_active = False
+        # self.__spin_mode_active = False
+
+    def reset_simulation_callback(self, request, response):
+        if self.__robot is None:
+            self.get_logger().error(
+                "Webots supervisor not initialized. Cannot reset simulation."
+            )
+            response.success = False
+        # return response
+        else:
+            self.__node.get_logger().info("Resetting simulation...")
+            self.__robot.simulationResetPhysics()
+            # self.__robot.simulationReset()
+            reset_translation = [8.939, -0.001, 1.575]  # New position [x, y, z]
+            # 8.938732223704125 -0.0009930059396084058 1.575153773185951
+            reset_rotation = [0.019, -0.100, 0.005, 0.181]
+            # 0.018985947144367615 -0.9998069429081664 0.005060703869794486 0.18120325692260328
+            self.trans_field.setSFVec3f(reset_translation)
+            self.rot_field.setSFRotation(reset_rotation)
+            self.__node.get_logger().info("Simulation reset successfully")
+            response.success = True
+        return response
+
+    def __mode_callback(self, mode):
+        self.__mode = mode.data
+
+        if self.__mode == "spin":
+            self.__controller.set_spin_mode()
+        else:
+            self.__controller.reset_wheels()
 
     def __cmd_vel_callback(self, twist):
         self.__target_twist = twist
@@ -90,67 +132,23 @@ class GearsRobotDriver:
 
         angular_velocity = self.__target_twist.angular.z
 
-        self.__controller.go_straight(linear_velocity)
+        # self.__node.get_logger().info(f"{self.__mode}")
 
-        if angular_velocity > 0.0:  # LEFT STEER
-            self.__controller.set_ackerman_steer(ROTATION_INCREMENT, self.__mode)
-        elif angular_velocity < 0.0:  # RIGHT STEER
-            self.__controller.set_ackerman_steer(-ROTATION_INCREMENT, self.__mode)
+        if self.__mode == "mirrored":
+            self.__controller.go_straight(linear_velocity)
 
+            if angular_velocity > 0.0:  # LEFT STEER
+                self.__controller.set_ackerman_steer(ROTATION_INCREMENT, self.__mode)
+            elif angular_velocity < 0.0:  # RIGHT STEER
+                self.__controller.set_ackerman_steer(-ROTATION_INCREMENT, self.__mode)
+
+            else:
+                self.__controller.reset_wheels()
         else:
-            self.__controller.reset_wheels()
-        # if linear_speed  != 0.0 or angular_speed != 0.0:
-        #     self.__node.get_logger().info(f"Command Received")
-
-        #     if linear_speed == 0.0:
-        #         self.__mode = "spin"
-        #     else:
-        #         self.__mode = "mirror"
-
-        #     if self.__mode == "spin":
-
-        #         # self.__mode = "spin"
-
-        #         if not self.__spin_mode_active:
-        #             self.__controller.set_spin_mode()
-        #             # time.sleep(1)
-        #             self.__spin_mode_active = True
-
-        #         final_angular_speed = abs(
-        #             np.interp(
-        #                 angular_speed,
-        #                 (
-        #                     math.radians(-MAX_ANGULAR),
-        #                     math.radians(MAX_ANGULAR),
-        #                 ),
-        #                 (-MAX_LINEAR_OUTPUT, MAX_LINEAR_OUTPUT),
-        #             )
-        #         )
-        #         if angular_speed > 0:
-        #             self.__controller.go_spin(final_angular_speed, "counter_clockwise")
-        #         else:
-        #             self.__controller.go_spin(final_angular_speed, "clockwise")
-
-        #     else:
-        #         # self.__mode = "mirror"
-        #         # linear_speed = abs(angular_speed)
-        #         self.__controller.go_straight(linear_speed)
-        #         self.__controller.set_ackerman_steer(angular_speed)
-        #         self.__spin_mode_active = False
-
-        # else:
-        #     self.__node.get_logger().info(f"No Command Received")
-        #     self.__controller.reset_wheels()
-        #     self.__controller.stop()
-        #     self.__spin_mode_active = False
-
-        # if linear_speed != 0.0 and angular_speed == 0.0:
-        #     self.__node.get_logger().info(f"Reset Wheels")
-        #     self.__controller.reset_wheels()
-
-        # self.__node.get_logger().info(
-        #     f" Linear: {linear_speed} Angular: {angular_speed}"
-        # )
+            if linear_velocity != 0.0:
+                self.__controller.go_spin(-linear_velocity)
+            else:
+                self.__controller.stop()
 
         x_pos, y_pos, z_pos = (trans_values[0], trans_values[1], trans_values[2])
 
@@ -160,6 +158,18 @@ class GearsRobotDriver:
             ori_values_quat_rnd[2],
             ori_values_quat_rnd[3],
         )
+
+        detected_objects = self.__rgb_camera.getRecognitionObjects()
+
+        if detected_objects:
+            self.__is_obj_detected.data = True
+        else:
+            self.__is_obj_detected.data = False
+
+        self.__mode_msg.data = self.__mode
+
+        self.obj_det_publisher_.publish(self.__is_obj_detected)
+        # self.mode_publisher.publish(self.__mode_msg)
 
         self.publish_odometry(
             x_pos,
@@ -198,7 +208,7 @@ class GearsRobotDriver:
         # odom_msg.twist.twist.angular.z = angular_speed
 
         self.odom_publisher.publish(odom_msg)
-        # self.__node.get_logger().info("Odometry message published")
+
         t = TransformStamped()
 
         t.header.stamp = self.__node.get_clock().now().to_msg()
