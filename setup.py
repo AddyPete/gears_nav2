@@ -52,6 +52,7 @@ setup(
         "console_scripts": [
             "gears_nav2_node = gears_nav2.gears_nav2_node:main",
             "gears_3d_nav_node = gears_nav2.gears_3d_nav_node:main",
+            "laser_wall_detection_node = gears_nav2.laser_wall_detection_node:main",
         ],
     },
 )
