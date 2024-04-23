@@ -16,8 +16,8 @@ WorldInfo {
   ]
 }
 Viewpoint {
-  orientation -0.18371740943635034 -0.06307976714276889 0.9809530347815895 3.7600144552114614
-  position 11.107961277761635 1.1782430220944873 2.3856704556055632
+  orientation 0.3057465018738406 -0.8544798527805013 -0.41998006831767887 4.891037866373915
+  position 8.2825063399389 -0.45323410435151035 2.7901663497156153
   follow "Gears3"
 }
 TexturedBackground {
@@ -68,7 +68,7 @@ DEF Gears3 GearsRover {
   controller "<extern>"
   extensionSlot [
     Lidar {
-      translation 0 0 0.22
+      translation 0.015 0 0.22
       children [
         Pose {
           rotation 0 0.7071032811764938 0.7071102811792772 3.141585
@@ -698,7 +698,7 @@ DEF Gears3 GearsRover {
       fieldOfView 6.28318
       numberOfLayers 1
       near 0.07
-      minRange 0.65
+      minRange 0.6
       maxRange 3.5
     }
     InertialUnit {
