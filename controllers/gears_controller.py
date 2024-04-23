@@ -125,6 +125,46 @@ class RobotController:
 
         self.__set_steer(steers)
 
+    def set_ackerman_angle(self, angle, mode):
+
+        curr_deg = self.deg
+        self.deg = math.degrees(angle)
+
+        if abs(self.deg) >= 45:
+            self.deg = curr_deg
+            return
+
+        self.ackerman_rot_h = angle
+
+        if self.ackerman_rot_h == 0:
+            return
+
+        phi = math.atan(
+            self.b / (2 * self.a + self.b / math.tan(abs((self.ackerman_rot_h))))
+        )
+
+        if self.ackerman_rot_h > 0:
+            self.ackerman_rot_l = phi
+        else:
+            self.ackerman_rot_l = -phi
+
+        if self.ackerman_rot_h > 0:  #### LEFT STEER
+            steers = [
+                self.ackerman_rot_l,
+                self.ackerman_rot_h,
+                -self.ackerman_rot_l,
+                -self.ackerman_rot_h,
+            ]
+        else:  #### RIGHT STEER
+            steers = [
+                self.ackerman_rot_h,
+                self.ackerman_rot_l,
+                -self.ackerman_rot_h,
+                -self.ackerman_rot_l,
+            ]
+
+        self.__set_steer(steers)
+
     def set_wheel_speed(self, velocities):
         for i in range(4):
             self.wheel_motors[i].setVelocity(velocities[i])
