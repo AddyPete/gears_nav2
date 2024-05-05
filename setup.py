@@ -23,6 +23,13 @@ data_files.append(
 )
 
 data_files.append(
+    (
+        "share/" + package_name + "/worlds/GearsNav2World/worlds",
+        ["worlds/GearsNav2World/worlds/3d_world_flat.wbt"],
+    )
+)
+
+data_files.append(
     ("share/" + package_name + "/resource", ["resource/gears_rover.urdf"])
 )
 data_files.append(("share/" + package_name + "/launch", ["launch/robot_launch.py"]))
@@ -59,6 +66,8 @@ setup(
             "laser_ld_wall_detection_node = gears_nav2.laser_ld_wall_detection_node:main",
             "zed_2i_custom_node = gears_nav2.zed_2i_custom_node:main",
             "zed_depth_subscriber_node = gears_nav2.zed_depth_subscriber_node:main",
+            "zed_imu_subscriber_node = gears_nav2.zed_imu_subscriber_node:main",
+            "aruco_pose_estimation_node = gears_nav2.aruco_pose_estimation_node:main",
         ],
     },
 )
