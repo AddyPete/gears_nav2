@@ -22,7 +22,7 @@ def generate_launch_description():
 
     webots = WebotsLauncher(
         world=os.path.join(
-            package_dir, "worlds", "GearsNav2World", "worlds", "3d_world.wbt"
+            package_dir, "worlds", "GearsNav2World", "worlds", "3d_world_flat.wbt"
         )
     )
 
