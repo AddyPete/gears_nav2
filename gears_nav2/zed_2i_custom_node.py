@@ -28,7 +28,9 @@ class ZedCustomNode(Node):
             qos_profile,  # Adjust the queue size as needed
         )
 
-        self._obj_det_publisher = self.create_publisher(Bool, "/is_object_detected", 10)
+        self._obj_det_publisher = self.create_publisher(
+            Bool, "/zed/is_object_detected", 10
+        )
 
         self.__is_obj_detected = False
         timer_period = 1.0 / 20  # seconds (20Hz)
@@ -66,11 +68,15 @@ class ZedCustomNode(Node):
             min_distance = round(
                 min_distance, 3
             )  # Round the distance to three decimal places
-            self.get_logger().info(
-                f"Nearest object is '{nearest_object.label}' with ID {nearest_object.label_id} at distance {min_distance} meters."
-            )
+            # self.get_logger().info(
+            #     f"Nearest object is '{nearest_object.label}' with ID {nearest_object.label_id} at distance {min_distance} meters."
+            # )
 
-        if obj_det_count > 0 and min_distance < NEAR_DISTANCE_THRESH:
+        if (
+            obj_det_count > 0
+            and min_distance < NEAR_DISTANCE_THRESH
+            and nearest_object.label == "Person"
+        ):
             self.__is_obj_detected = True
         else:
             self.__is_obj_detected = False
