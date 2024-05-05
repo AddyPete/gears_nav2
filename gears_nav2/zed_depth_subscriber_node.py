@@ -9,8 +9,8 @@ ZED_HEIGHT = 360
 ZED_WIDTH = 640
 MIN_DEPTH = 0.20
 MAX_DEPTH = 10.0
-ACTION_THRESH = 1.4
-
+ZED_DEPTH_LEFT_RIGHT_THRESH = 1.0  # 1.0 ORIG
+ZED_FRONT_DEPTHTHRESH = 0.89  # 0.89 ORIG
 action_dict = {0: "Left", 1: "Center", 2: "Right"}
 
 
@@ -26,35 +26,35 @@ class ZedDepthSubscriber(Node):
 
         self.bridge = CvBridge()
 
-        self.zed_is_near_wall_pub = self.create_publisher(Bool, "/zed/is_near_wall", 10)
+        self.zed_is_near_wall_pub = self.create_publisher(
+            Bool, "/zed/is_near_front_obs", 10
+        )
+
         self.zed_is_obs_near_left_pub = self.create_publisher(
-            Bool, "/zed/is_obs_near_left", 10
+            Bool, "/zed/is_near_left_obs", 10
         )
 
         self.zed_is_obs_near_right_pub = self.create_publisher(
-            Bool, "/zed/is_obs_near_right", 10
+            Bool, "/zed/is_near_right_obs", 10
         )
 
         self.__is_near_wall = False
         self.__is_obs_near_left = False
         self.__is_obs_near_right = False
-        self.is_near_wall_msg = Bool()
-        self.is_obs_near_left_msg = Bool()
-        self.is_obs_near_right_msg = Bool()
 
         timer_period = 1.0 / 20  # seconds (20Hz)
         self.timer = self.create_timer(timer_period, self.wall_detect_timer_callback)
 
     def wall_detect_timer_callback(self):
 
-        self.is_near_wall_msg.data = self.__is_near_wall
-        self.zed_is_near_wall_pub.publish(self.is_near_wall_msg)
+        # self.is_near_wall_msg.data = self.__is_near_wall
+        self.zed_is_near_wall_pub.publish(Bool(data=self.__is_near_wall))
 
-        self.is_obs_near_left_msg.data = self.__is_obs_near_left
-        self.zed_is_obs_near_left_pub.publish(self.is_obs_near_left_msg)
+        # self.is_obs_near_left_msg.data = self.__is_obs_near_left
+        self.zed_is_obs_near_left_pub.publish(Bool(data=self.__is_obs_near_left))
 
-        self.is_obs_near_right_msg.data = self.__is_obs_near_right
-        self.zed_is_obs_near_right_pub.publish(self.is_obs_near_right_msg)
+        # self.is_obs_near_right_msg.data = self.__is_obs_near_right
+        self.zed_is_obs_near_right_pub.publish(Bool(data=self.__is_obs_near_right))
 
     def zed_depth_callback(self, zed_msg):
 
@@ -143,33 +143,50 @@ class ZedDepthSubscriber(Node):
         row_3 = ZED_HEIGHT - 1  # 360
         # self.get_logger().info(f"Row 1: {row_1} | Row 2: {row_2} Row 3: {row_3}")
 
-        slice_left = np.sum(normalized_depth[row_1:row_3, 0:col_1])
-        slice_mid = np.sum(normalized_depth[row_1:row_3, col_1:col_2])
-        slice_right = np.sum(normalized_depth[row_1:row_3, col_2:col_3])
+        slice_left = normalized_depth[row_1:row_3, 0:col_1]
+        slice_mid = normalized_depth[row_1:row_3, col_1:col_2]
+        slice_right = normalized_depth[row_1:row_3, col_2:col_3]
+
+        total_slice_left = np.sum(slice_left)
+        total_slice_mid = np.sum(slice_mid)
+        total_slice_right = np.sum(slice_right)
 
         # depth_bins = [slice1, slice2, slice3]
 
         # print("depth_bins: ", depth_bins)
-        self.get_logger().info(f"Slice Left: {slice_left}")
-        self.get_logger().info(f"Slice Right: {slice_right}")
+        # self.get_logger().info(f"Slice Left: {total_slice_left}")
+        # self.get_logger().info(f"Slice Right: {total_slice_right}")
 
-        self.get_logger().info(f"Slice Left/Right: {slice_left/slice_right}")
-        self.get_logger().info(f"Slice Right/Left: {slice_right/slice_left}")
+        # self.get_logger().info(
+        #     f"Slice Left/Right: {total_slice_left/total_slice_right}"
+        # )
+        # self.get_logger().info(
+        #     f"Slice Right/Left: {total_slice_right/total_slice_left}"
+        # )
 
-        if (slice_left / slice_right) > ACTION_THRESH:
-            action = 0  # LEFT
-            self.__is_obs_near_left = False
+        total_depth_sum = (total_slice_left + total_slice_mid + total_slice_right) / (
+            np.size(slice_left) + np.size(slice_mid) + np.size(slice_right)
+        )
+        total_depth_sum = 1 - total_depth_sum
+        # self.get_logger().info(f"Depth % (Left+Mid+Right): {total_depth_sum}")
+
+        if (total_slice_left / total_slice_right) > ZED_DEPTH_LEFT_RIGHT_THRESH:
+            # self.__is_obs_near_left = False
             self.__is_obs_near_right = True
-        elif (slice_right / slice_left) > ACTION_THRESH:
-            action = 2  # RIGHT
-            self.__is_obs_near_left = True
-            self.__is_obs_near_right = False
         else:
-            action = 1  # CENTER
-            self.__is_obs_near_left = False
             self.__is_obs_near_right = False
 
-        self.get_logger().info(f"Action: Going {action_dict[action]}")
+        if (total_slice_right / total_slice_left) > ZED_DEPTH_LEFT_RIGHT_THRESH:
+            self.__is_obs_near_left = True
+        else:
+            self.__is_obs_near_left = False
+            # self.__is_obs_near_right = False
+
+        if total_depth_sum >= ZED_FRONT_DEPTHTHRESH:
+            self.__is_near_wall = True
+        else:
+            self.__is_near_wall = False
+        # self.get_logger().info(f"Action: Going {action_dict[action]}")
 
 
 def main(args=None):
