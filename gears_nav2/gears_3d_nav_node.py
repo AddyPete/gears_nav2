@@ -15,7 +15,6 @@ ROBOT_WIDTH = 0.815971
 ROBOT_HEIGHT = 0.7205
 
 ROTATION_INCREMENT = 0.00872665
-CORRECTION_ANGLE = 0.17  # 15 DEG
 MAX_LINEAR = 0.3
 MAX_ANGULAR = 0.3
 
@@ -206,7 +205,7 @@ class GearsRobotDriver:
 
             if self._angle_requested_go_left:
                 # if self.is_near_right_wall:
-                self.__controller.set_ackerman_angle(CORRECTION_ANGLE, self.__mode)
+                self.__controller.set_ackerman_angle(angular_velocity, self.__mode)
                 # self.__node.get_logger().error("Go Left 15 DEG")
                 # if self.is_near_left_wall:
                 # self.__controller.set_ackerman_angle(-CORRECTION_ANGLE, self.__mode)
@@ -215,7 +214,7 @@ class GearsRobotDriver:
                 self.__robot.step(256)
                 # time.sleep(1)
             if self._angle_requested_go_right:
-                self.__controller.set_ackerman_angle(-CORRECTION_ANGLE, self.__mode)
+                self.__controller.set_ackerman_angle(angular_velocity, self.__mode)
                 # self.__node.get_logger().error("Go Right 15 DEG")
                 self._angle_requested_go_right = False
 
