@@ -20,5 +20,15 @@ def generate_launch_description():
                 # namespace="gears_nav2",
                 executable="zed_depth_subscriber_node",
             ),
+            Node(
+                package="gears_nav2",
+                # namespace="gears_nav2",
+                executable="zed_imu_subscriber_node",
+            ),
+            Node(
+                package="gears_nav2",
+                # namespace="gears_nav2",
+                executable="aruco_pose_estimation_node",
+            ),
         ]
     )
