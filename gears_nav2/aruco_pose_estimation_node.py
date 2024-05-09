@@ -60,7 +60,7 @@ class ArucoNode(Node):
         self.declare_parameter("aruco_marker_side_length", 0.0785)
         self.declare_parameter(
             "camera_calibration_parameters_filename",
-            "/home/minegearscsu/Desktop/zed_calibration_left.yaml",
+            "/home/minegearscsu/ros2_ws/src/gears_nav2/resource/zed_calibration_left.yaml",
         )
         self.declare_parameter("image_topic", "/zed/zed_node/rgb/image_rect_color")
         self.declare_parameter("aruco_marker_name", "aruco_marker")
