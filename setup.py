@@ -46,6 +46,23 @@ data_files.append(
 data_files.append(
     ("share/" + package_name + "/controllers", ["controllers/gears_controller.py"])
 )
+
+data_files.append(
+    (
+        "share/" + package_name + "/collapse_detection",
+        [
+            "collapse_detection/collapse_detection_model0.pt",
+            "collapse_detection/collapse_detection_model1.pt",
+            "collapse_detection/detection.py",
+            "collapse_detection/yolov8n-pose.pt",
+            "collapse_detection/model/collapse_detection_model/attentionBiLSTM.py",
+            "collapse_detection/model/collapse_detection_model/attentionModule.py",
+            "collapse_detection/model/collapse_detection_model/feedForwardNN.py",
+            "collapse_detection/model/collapse_detection_model/LissaLayer.py",
+        ],
+    )
+)
+
 setup(
     name=package_name,
     version="0.0.0",
@@ -68,6 +85,7 @@ setup(
             "zed_depth_subscriber_node = gears_nav2.zed_depth_subscriber_node:main",
             "zed_imu_subscriber_node = gears_nav2.zed_imu_subscriber_node:main",
             "aruco_pose_estimation_node = gears_nav2.aruco_pose_estimation_node:main",
+            "collapse_detection_node = gears_nav2.collapse_detection_node:main",
         ],
     },
 )
