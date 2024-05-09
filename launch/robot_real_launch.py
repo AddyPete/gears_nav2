@@ -30,5 +30,10 @@ def generate_launch_description():
                 # namespace="gears_nav2",
                 executable="aruco_pose_estimation_node",
             ),
+            Node(
+                package="gears_nav2",
+                # namespace="gears_nav2",
+                executable="collapse_detection_node",
+            ),
         ]
     )
