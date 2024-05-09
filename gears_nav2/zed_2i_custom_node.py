@@ -75,7 +75,7 @@ class ZedCustomNode(Node):
         if (
             obj_det_count > 0
             and min_distance < NEAR_DISTANCE_THRESH
-            and nearest_object.label == "Person"
+            and nearest_object.label == "Person"  # Sport
         ):
             self.__is_obj_detected = True
         else:
