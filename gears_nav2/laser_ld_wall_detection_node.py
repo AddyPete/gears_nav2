@@ -4,7 +4,7 @@ from rclpy.node import Node
 from sensor_msgs.msg import LaserScan
 from std_msgs.msg import Bool
 
-LIDAR_RANGE_THRESHOLD = 0.8  # meters to turn
+LIDAR_RANGE_THRESHOLD = 1.1  # meters to turn
 LIDAR_POINTS_THRESHOLD = 30  # points
 
 LIDAR_RANGE_THRESHOLD_SIDE = 1.5
@@ -37,7 +37,7 @@ class LaserLDWallDetection(Node):
             Bool, "/lidar/is_near_right_wall", 10
         )
 
-        timer_period = 1.0 / 20  # seconds (20Hz)
+        timer_period = 1.0 / 50  # seconds (20Hz)
         self.timer = self.create_timer(timer_period, self.wall_detect_timer_callback)
         self.is_near_wall_msg = Bool()
         self.is_near_wall_msg_left_msg = Bool()
@@ -110,13 +110,13 @@ class LaserLDWallDetection(Node):
                 lidar_right_side <= LIDAR_RANGE_THRESHOLD_SIDE
             )
 
-            self.get_logger().info(
-                f"Lidar Obstacle Points Left: {self._lidar_obstacle_count_left}"
-            )
+            # self.get_logger().info(
+            #     f"Lidar Obstacle Points Left: {self._lidar_obstacle_count_left}"
+            # )
 
-            self.get_logger().info(
-                f"Lidar Obstacle Points Right: {self._lidar_obstacle_count_right}"
-            )
+            # self.get_logger().info(
+            #     f"Lidar Obstacle Points Right: {self._lidar_obstacle_count_right}"
+            # )
 
             if self._lidar_obstacle_count_left >= LIDAR_POINTS_THRESHOLD_SIDE:
 
