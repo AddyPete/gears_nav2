@@ -7,9 +7,11 @@ from std_msgs.msg import Bool
 
 ZED_HEIGHT = 360
 ZED_WIDTH = 640
-MIN_DEPTH = 0.20
-MAX_DEPTH = 10.0
-ZED_DEPTH_LEFT_RIGHT_THRESH = 1.0  # 1.0 ORIG
+MIN_DEPTH = 200  # 0.2 METERS
+MAX_DEPTH = 10000  # 10 METERS
+# ZED_DEPTH_LEFT_RIGHT_THRESH = 100.0  # 1.0 ORIG
+# ZED_FRONT_DEPTHTHRESH = 100.0  # 0.89 ORIG
+ZED_DEPTH_LEFT_RIGHT_THRESH = 1.5  # 1.5 ORIG
 ZED_FRONT_DEPTHTHRESH = 0.89  # 0.89 ORIG
 action_dict = {0: "Left", 1: "Center", 2: "Right"}
 
@@ -41,12 +43,13 @@ class ZedDepthSubscriber(Node):
         self.__is_near_wall = False
         self.__is_obs_near_left = False
         self.__is_obs_near_right = False
+        # self.yes = 0
 
-        timer_period = 1.0 / 20  # seconds (20Hz)
+        timer_period = 1.0 / 50  # seconds (20Hz)
         self.timer = self.create_timer(timer_period, self.wall_detect_timer_callback)
 
     def wall_detect_timer_callback(self):
-
+        # self.get_logger().info(f"TOTAL YES {self.yes}")
         # self.is_near_wall_msg.data = self.__is_near_wall
         self.zed_is_near_wall_pub.publish(Bool(data=self.__is_near_wall))
 
@@ -105,18 +108,20 @@ class ZedDepthSubscriber(Node):
         positive_inf_mask = np.isposinf(depth_image_np)
 
         # Create a mask where the value is negative infinity
-        negative_inf_mask_or_nan_mask = np.isneginf(depth_image_np) | np.isnan(
-            depth_image_np
-        )
+        negative_inf_mask_or_nan_mask = np.isneginf(depth_image_np)
+
+        nan_mask = np.isnan(depth_image_np)
 
         # Replace positive infinity with 3.5
+
+        depth_image_np[nan_mask] = 0.0
         depth_image_np[positive_inf_mask] = MAX_DEPTH
 
         # Replace negative infinity with 0.3
         depth_image_np[negative_inf_mask_or_nan_mask] = MIN_DEPTH
 
-        max_depth = np.nanmax(depth_image_np)
-        min_depth = np.nanmin(depth_image_np)
+        # max_depth = np.nanmax(depth_image_np)
+        # min_depth = np.nanmin(depth_image_np)
         # self.get_logger().info(f"Maximum depth value: {max_depth}")
         # self.get_logger().info(f"Minimum depth value: {min_depth}")
 
@@ -168,19 +173,28 @@ class ZedDepthSubscriber(Node):
             np.size(slice_left) + np.size(slice_mid) + np.size(slice_right)
         )
         total_depth_sum = 1 - total_depth_sum
+
+        # self.get_logger().info(f"Mid: {total_slice_mid}")
         # self.get_logger().info(f"Depth % (Left+Mid+Right): {total_depth_sum}")
 
         if (total_slice_left / total_slice_right) > ZED_DEPTH_LEFT_RIGHT_THRESH:
             # self.__is_obs_near_left = False
             self.__is_obs_near_right = True
+            # self.get_logger().info(f"YES RIGHT")
+
         else:
             self.__is_obs_near_right = False
+            # self.get_logger().info(f"NO RIGHT")
+            # self.yes += 1
 
         if (total_slice_right / total_slice_left) > ZED_DEPTH_LEFT_RIGHT_THRESH:
             self.__is_obs_near_left = True
+            # self.get_logger().info(f"YES LEFT")
+
         else:
             self.__is_obs_near_left = False
-            # self.__is_obs_near_right = False
+            # self.get_logger().info(f"NO LEFT")
+            # self.yes += 1
 
         if total_depth_sum >= ZED_FRONT_DEPTHTHRESH:
             self.__is_near_wall = True
