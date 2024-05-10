@@ -6,6 +6,9 @@ from zed_interfaces.msg import ObjectsStamped
 from rclpy.qos import QoSProfile, QoSHistoryPolicy, QoSReliabilityPolicy
 
 NEAR_DISTANCE_THRESH = 1.0  # < 1Meter
+NEAR_DISTANCE_EXCLUDE_THRESH = 0.9
+NEAR_DISTANCE_SIDE_THRESH = 1.7  # <1.5Meters
+RATIO_Y_THRESH = 0.10
 
 
 class ZedCustomNode(Node):
@@ -29,10 +32,21 @@ class ZedCustomNode(Node):
         )
 
         self._obj_det_publisher = self.create_publisher(
-            Bool, "/zed/is_object_detected", 10
+            Bool, "/zed/is_object_detected_front", 10
+        )
+
+        self.zed_is_obs_near_left_pub = self.create_publisher(
+            Bool, "/zed/is_object_detected_left", 10
+        )
+
+        self.zed_is_obs_near_right_pub = self.create_publisher(
+            Bool, "/zed/is_object_detected_right", 10
         )
 
         self.__is_obj_detected = False
+        self.__is_obj_detected_near_left = False
+        self.__is_obj_detected_near_right = False
+
         timer_period = 1.0 / 20  # seconds (20Hz)
         self.timer = self.create_timer(timer_period, self.zed_timer_callback)
 
@@ -45,42 +59,80 @@ class ZedCustomNode(Node):
 
     def zed_timer_callback(self):
 
-        self.is_object_detected_msg = Bool()
-        self.is_object_detected_msg.data = self.__is_obj_detected
+        # self.is_object_detected_msg = Bool()
+        # self.is_object_detected_msg.data = self.__is_obj_detected
 
-        self._obj_det_publisher.publish(self.is_object_detected_msg)
+        self._obj_det_publisher.publish(Bool(data=self.__is_obj_detected))
+        self.zed_is_obs_near_left_pub.publish(
+            Bool(data=self.__is_obj_detected_near_left)
+        )
+        self.zed_is_obs_near_right_pub.publish(
+            Bool(data=self.__is_obj_detected_near_right)
+        )
 
     def obj_detector(self):
 
         obj_det_count = len(self._obj_det.objects)
 
         nearest_object = None
-        min_distance = float("inf")
+        min_distance_x = float("inf")
+        min_distance_y = float("inf")
+        ratio_y = float("inf")
 
         for obj in self._obj_det.objects:
 
-            distance = obj.position[0]
-            if distance < min_distance:
-                min_distance = distance
+            distance_x = round(obj.position[0], 2)
+            distance_y = round(obj.position[1], 2)
+            # distance_z = round(obj.position[2], 2)
+
+            if distance_x < min_distance_x:
+                min_distance_x = distance_x
+                min_distance_y = distance_y
                 nearest_object = obj
 
         if nearest_object is not None:
-            min_distance = round(
-                min_distance, 3
-            )  # Round the distance to three decimal places
+            min_distance_x = round(
+                min_distance_x, 3
+            )  # Round the distance_x to three decimal places
+            # if
             # self.get_logger().info(
-            #     f"Nearest object is '{nearest_object.label}' with ID {nearest_object.label_id} at distance {min_distance} meters."
+            #     f"Nearest object is '{nearest_object.label}' with ID {nearest_object.label_id} at distance_x {min_distance_x}m | distance_y {min_distance_y}m"
             # )
+            ratio_y = min_distance_y / min_distance_x
 
+        self.get_logger().info(f"Dist X: {min_distance_x}")
+        self.get_logger().info(f"Ratio Y: {ratio_y}")
         if (
             obj_det_count > 0
-            and min_distance < NEAR_DISTANCE_THRESH
+            and min_distance_x < NEAR_DISTANCE_THRESH
+            and abs(ratio_y) < NEAR_DISTANCE_EXCLUDE_THRESH
             and nearest_object.label == "Person"  # Sport
         ):
             self.__is_obj_detected = True
         else:
             self.__is_obj_detected = False
 
+        if (
+            obj_det_count > 0
+            and min_distance_x < NEAR_DISTANCE_SIDE_THRESH
+            # and ratio_y > 0
+            and ratio_y > RATIO_Y_THRESH
+            and nearest_object.label == "Person"
+        ):
+            self.__is_obj_detected_near_left = True
+        else:
+            self.__is_obj_detected_near_left = False
+
+        if (
+            obj_det_count > 0
+            and min_distance_x < NEAR_DISTANCE_SIDE_THRESH
+            and ratio_y < -RATIO_Y_THRESH
+            and nearest_object.label == "Person"
+            # and ratio_y < 0
+        ):
+            self.__is_obj_detected_near_right = True
+        else:
+            self.__is_obj_detected_near_right = False
         # self.get_logger().info(f"Object Det Count: {obj_det_count}")
 
 
