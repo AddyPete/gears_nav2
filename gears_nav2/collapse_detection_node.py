@@ -135,7 +135,7 @@ class CollapseDectionNode(Node):
                             self.person_y = float(y - 20)
                             # self.get_logger().info(f"Output: {type(output)}")
                             if output == 1:
-                                self.get_logger().info(f"COLLAPSE DETECTED!!---------")
+                                # self.get_logger().info(f"COLLAPSE DETECTED!!---------")
                                 # cv2.putText(
                                 #     annotated_frame,
                                 #     "COLLAPSE DETECTED!",
@@ -150,9 +150,9 @@ class CollapseDectionNode(Node):
                                 if not pygame.mixer.music.get_busy():
                                     pygame.mixer.music.play()
                             else:
-                                self.get_logger().info(
-                                    f"NO ACCIDENT!!- NO COLLAPSE DETECTED!"
-                                )
+                                # self.get_logger().info(
+                                #     f"NO ACCIDENT!!- NO COLLAPSE DETECTED!"
+                                # )
                                 # cv2.putText(
                                 #     annotated_frame,
                                 #     "SAFE",
@@ -163,10 +163,10 @@ class CollapseDectionNode(Node):
                                 #     7,
                                 # )
                                 self.collapse_detected = False
-                        else:
-                            print(
-                                f"ID: {track_id} ===================== { len(self.track_history[track_id]) }"
-                            )
+                        # else:
+                        #     print(
+                        #         f"ID: {track_id} ===================== { len(self.track_history[track_id]) }"
+                        #     )
                 # Plot the tracks
                 for box, track_id, n_keypoint, n_boxes_xywh, n_boxes_xyxy in zip(
                     boxes,
